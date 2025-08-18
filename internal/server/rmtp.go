@@ -12,8 +12,8 @@ type RtmpServer struct {
 }
 
 func NewRtmpServer(port string) *RtmpServer {
-	s:= &RtmpServer{
-		Port: port,
+	s := &RtmpServer{
+		Port:       port,
 		rtmpServer: &rtmp.Server{},
 	}
 
@@ -22,6 +22,6 @@ func NewRtmpServer(port string) *RtmpServer {
 
 func (s *RtmpServer) Start() error {
 	log.Println("📡 RTMP server listening on", s.Port)
-	s.rtmpServer.Addr = ":"+s.Port
+	s.rtmpServer.Addr = ":" + s.Port
 	return s.rtmpServer.ListenAndServe()
 }

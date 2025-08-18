@@ -10,7 +10,7 @@ import (
 func main() {
 	cfg := config.LoadConfig("config.local.yaml")
 	rmtpSrv := server.NewRtmpServer(cfg.RTMP.Port)
-	go func ()  {
+	go func() {
 		if err := rmtpSrv.Start(); err != nil {
 			log.Fatal("RTMP server error:", err)
 		}
@@ -21,4 +21,3 @@ func main() {
 		log.Fatal("HTTP server error:", err)
 	}
 }
-	
