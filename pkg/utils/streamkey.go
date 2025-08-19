@@ -6,7 +6,7 @@ import (
 )
 
 func GenerateStreamKey() string {
-	b := make([]byte,8)
+	b := make([]byte, 8)
 	rand.Read(b)
 	return hex.EncodeToString(b)
 }

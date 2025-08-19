@@ -18,19 +18,19 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(streamID string) (string,error) {
-	claims:= &Claims{
+func GenerateJWT(streamID string) (string, error) {
+	claims := &Claims{
 		StreamID: streamID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(tokenDuration*time.Now().Minute()) * time.Minute)),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secretKey)
 }
 
-func DecodeJWT(tokenStr string) (*Claims,error) {
-	token , err := jwt.ParseWithClaims(tokenStr,&Claims{},func(t *jwt.Token) (interface{}, error) {
+func DecodeJWT(tokenStr string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})
 
