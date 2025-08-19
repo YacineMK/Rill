@@ -4,9 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	customMiddleware "github.com/YacineMK/Rill/internal/middleware"
+	"github.com/YacineMK/Rill/internal/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	customMiddleware "github.com/YacineMK/Rill/internal/middleware"
 )
 
 type HttpServer struct {
@@ -26,9 +27,7 @@ func (s *HttpServer) Setup() {
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Recoverer)
 
-	s.Router.Get("/welcome", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to API"))
-	})
+	router.Route(s.Router)
 }
 
 func (s *HttpServer) Start() error {
