@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	customMiddleware "github.com/YacineMK/Rill/internal/middleware"
 	"github.com/YacineMK/Rill/internal/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -23,7 +22,6 @@ func NewHttpServer(port string) *HttpServer {
 }
 
 func (s *HttpServer) Setup() {
-	s.Router.Use(customMiddleware.Json)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Recoverer)
 
@@ -32,6 +30,6 @@ func (s *HttpServer) Setup() {
 
 func (s *HttpServer) Start() error {
 	s.Setup()
-	log.Printf("📡 HTTP server listening on %v\n", s.Port)
+	log.Printf("HTTP server listening on %v\n", s.Port)
 	return http.ListenAndServe(":"+s.Port, s.Router)
 }

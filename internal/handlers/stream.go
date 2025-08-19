@@ -10,20 +10,19 @@ import (
 type StreamHandler struct{}
 
 func (h *StreamHandler) StreamKeyHandler(w http.ResponseWriter, r *http.Request) {
-	key := utils.GenerateStreamKey()
+	streamID := utils.GenerateStreamKey()
 
-	claims := jwt.Claims{
-		StreamID: key, 
-	}
-
-	token, err := jwt.GenerateJWT(claims.StreamID)
+	token, err := jwt.GenerateJWT(streamID)
 	if err != nil {
 		utils.WriteJSONError(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, utils.Map{
-		"message": "Stream key generated successfully",
-		"token": token,
+		"success": true,
+		"data": utils.Map{
+			"stream_key": token,
+			"stream_id":  streamID,
+		},
 	})
 }

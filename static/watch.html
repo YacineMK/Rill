@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watch Stream - Rill</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3rem 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 900px;
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+    
+    .input-section {
+      margin-bottom: 3rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    input {
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: #e8e8e8;
+      font-size: 1rem;
+      width: 300px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    input::placeholder {
+      color: #999;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:disabled {
+      background: linear-gradient(135deg, #555 0%, #666 100%);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    video {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+    
+    .controls {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .controls button {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .controls button:hover {
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+    
+    .status {
+      margin-top: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+    
+    .status.loading {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+    
+    .status.success {
+      background: rgba(40, 167, 69, 0.1);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+    
+    .status.error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+    
+    .nav-link {
+      color: #667eea;
+      text-decoration: none;
+      margin-top: 3rem;
+      display: inline-block;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 50%;
+      background: #667eea;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+      left: 0;
+    }
+    
+    .info {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #ccc;
+      line-height: 1.6;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 768px) {
+      .input-section {
+        flex-direction: column;
+      }
+      
+      input {
+        width: 100%;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .controls button {
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Watch Live Stream</h1>
+    
+    <div class="input-section">
+      <input id="streamId" type="text" placeholder="Enter Stream ID" />
+      <button onclick="loadStream()">Play Stream</button>
+    </div>
+    
+    <video id="video" controls></video>
+    
+    <div class="controls">
+      <button onclick="stopStream()">Stop</button>
+      <button onclick="refreshStream()">Refresh</button>
+      <button onclick="toggleMute()">Toggle Mute</button>
+    </div>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    
+    <div class="info">
+      <strong>Instructions:</strong><br>
+      1. Enter the Stream ID from the stream creator<br>
+      2. Click "Play Stream" to start watching<br>
+      3. The stream will automatically start playing when available
+    </div>
+    
+    <a href="create.html" class="nav-link">← Create New Stream</a>
+  </div>
+
+  <script>
+    let hls = null;
+    let currentStreamId = null;
+    
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type}`;
+      status.style.display = 'block';
+    }
+    
+    function hideStatus() {
+      const status = document.getElementById('status');
+      status.style.display = 'none';
+    }
+    
+    function loadStream() {
+      const streamId = document.getElementById('streamId').value.trim();
+      if (!streamId) {
+        showStatus('Please enter a Stream ID', 'error');
+        return;
+      }
+      
+      if (currentStreamId === streamId && hls) {
+        showStatus('Stream already loaded', 'success');
+        return;
+      }
+      
+      currentStreamId = streamId;
+      const video = document.getElementById('video');
+      const url = `/tmp/${streamId}/playlist.m3u8`;
+      
+      showStatus('Loading stream...', 'loading');
+      
+      // Clean up previous HLS instance
+      if (hls) {
+        hls.destroy();
+      }
+      
+      if (Hls.isSupported()) {
+        hls = new Hls({
+          debug: false,
+          enableWorker: false,
+          lowLatencyMode: true,
+          backBufferLength: 90
+        });
+        
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          showStatus('Stream loaded successfully', 'success');
+          video.play().catch(e => {
+            showStatus('Failed to auto-play. Click play button.', 'error');
+          });
+        });
+        
+        hls.on(Hls.Events.ERROR, function (event, data) {
+          console.error('HLS Error:', data);
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                showStatus('Network error: Stream not found or offline', 'error');
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                showStatus('Media error: Try refreshing', 'error');
+                break;
+              default:
+                showStatus('Fatal error: Cannot play stream', 'error');
+                break;
+            }
+          }
+        });
+        
+        hls.on(Hls.Events.FRAG_LOADED, function() {
+          if (document.getElementById('status').className.includes('loading')) {
+            showStatus('Stream playing', 'success');
+          }
+        });
+        
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Safari / iOS
+        video.src = url;
+        video.addEventListener('loadedmetadata', function () {
+          showStatus('Stream loaded successfully', 'success');
+          video.play().catch(e => {
+            showStatus('Failed to auto-play. Click play button.', 'error');
+          });
+        });
+        
+        video.addEventListener('error', function() {
+          showStatus('Error: Stream not found or offline', 'error');
+        });
+        
+      } else {
+        showStatus('Your browser does not support HLS playback', 'error');
+      }
+    }
+    
+    function stopStream() {
+      const video = document.getElementById('video');
+      video.pause();
+      video.currentTime = 0;
+      
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
+      
+      currentStreamId = null;
+      showStatus('Stream stopped', 'success');
+      setTimeout(hideStatus, 2000);
+    }
+    
+    function refreshStream() {
+      if (currentStreamId) {
+        stopStream();
+        setTimeout(() => {
+          document.getElementById('streamId').value = currentStreamId;
+          loadStream();
+        }, 500);
+      } else {
+        showStatus('No stream to refresh', 'error');
+      }
+    }
+    
+    function toggleMute() {
+      const video = document.getElementById('video');
+      video.muted = !video.muted;
+      showStatus(video.muted ? 'Muted' : 'Unmuted', 'success');
+      setTimeout(hideStatus, 1000);
+    }
+    
+    // Auto-load stream from URL parameter
+    window.addEventListener('load', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const streamId = urlParams.get('stream');
+      if (streamId) {
+        document.getElementById('streamId').value = streamId;
+        loadStream();
+      }
+    });
+    
+    // Allow Enter key to load stream
+    document.getElementById('streamId').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadStream();
+      }
+    });
+  </script>
+</body>
+</html>

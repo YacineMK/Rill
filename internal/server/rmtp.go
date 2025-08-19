@@ -24,7 +24,7 @@ func NewRtmpServer(port string) *RtmpServer {
 }
 
 func (s *RtmpServer) Start() error {
-	log.Println("📡 RTMP server listening on", s.Port)
+	log.Println("RTMP server listening on", s.Port)
 	s.rtmpServer.Addr = ":" + s.Port
 	return s.rtmpServer.ListenAndServe()
 }

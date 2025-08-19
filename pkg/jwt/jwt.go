@@ -22,7 +22,7 @@ func GenerateJWT(streamID string) (string, error) {
 	claims := &Claims{
 		StreamID: streamID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(tokenDuration*time.Now().Minute()) * time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(tokenDuration) * time.Minute)),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
