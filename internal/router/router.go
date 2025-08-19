@@ -11,6 +11,10 @@ import (
 var streamHandler = &handlers.StreamHandler{}
 
 func Route(r *chi.Mux) {
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/static/create.html", http.StatusMovedPermanently)
+	})
+
 	r.Route("/api/v1", func(mux chi.Router) {
 		mux.Use(customMiddleware.Json)
 		mux.Get("/stream-key", streamHandler.StreamKeyHandler)
