@@ -7,8 +7,9 @@ import (
 	"github.com/YacineMK/Rill/internal/server"
 )
 
+var cfg = config.GetConfig()
+
 func main() {
-	cfg := config.LoadConfig("config.local.yaml")
 	rmtpSrv := server.NewRtmpServer(cfg.RTMP.Port)
 	go func() {
 		if err := rmtpSrv.Start(); err != nil {

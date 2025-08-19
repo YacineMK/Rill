@@ -15,6 +15,11 @@ type Config struct {
 	RTMP struct {
 		Port string `yaml:"port"`
 	} `yaml:"rtmp"`
+
+	JWT struct {
+		Secret          string `yaml:"secret"`
+		DurationMinutes int    `yaml:"duration_minutes"`
+	} `yaml:"jwt"`
 }
 
 func LoadConfig(path string) *Config {

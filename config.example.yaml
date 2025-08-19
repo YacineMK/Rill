@@ -3,3 +3,7 @@ http:
 
 rtmp:
   port: "tbd"
+
+jwt:
+  secret: "tbd"
+  duration_minutes: 2
