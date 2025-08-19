@@ -8,5 +8,3 @@ require (
 	github.com/nareix/joy4 v0.0.0-20200507095837-05a4ffbb5369
 	gopkg.in/yaml.v3 v3.0.1
 )
-
-require github.com/grafov/m3u8 v0.12.1 // indirect

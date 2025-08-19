@@ -29,7 +29,7 @@ for smooth web playback across all modern browsers and mobile devices.
 ```bash
 git clone https://github.com/YacineMK/Rill.git
 cd Rill
-go mod download
+go mod tidy
 ```
 
 2. **Configure**
