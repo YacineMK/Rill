@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	customMiddleware "github.com/YacineMK/Rill/internal/middleware"
 )
 
 type HttpServer struct {
@@ -21,6 +22,7 @@ func NewHttpServer(port string) *HttpServer {
 }
 
 func (s *HttpServer) Setup() {
+	s.Router.Use(customMiddleware.Json)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Recoverer)
 
