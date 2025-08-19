@@ -14,6 +14,7 @@ type Config struct {
 
 	RTMP struct {
 		Port string `yaml:"port"`
+		TmpFolderPath string `yaml:"tmp_folder_path"` 
 	} `yaml:"rtmp"`
 
 	JWT struct {

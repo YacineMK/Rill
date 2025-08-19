@@ -3,6 +3,7 @@ http:
 
 rtmp:
   port: "tbd"
+  tmp_folder_path: "tbd"
 
 jwt:
   secret: "tbd"

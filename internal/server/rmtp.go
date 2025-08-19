@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 
+	"github.com/YacineMK/Rill/internal/handlers"
 	"github.com/nareix/joy4/format/rtmp"
 )
 
@@ -16,6 +17,8 @@ func NewRtmpServer(port string) *RtmpServer {
 		Port:       port,
 		rtmpServer: &rtmp.Server{},
 	}
+
+	s.rtmpServer.HandlePublish = handlers.HandlePublish
 
 	return s
 }
