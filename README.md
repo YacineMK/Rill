@@ -58,19 +58,3 @@ OBS Studio → RTMP → Rill Server → HLS → Web Browser
 3. Start streaming
 4. Watch in browser using stream ID
 
-## API
-
-**Generate Stream Key**
-```http
-POST /api/v1/stream-key
-```
-
-**Watch Stream**
-```http
-GET /tmp/{stream_id}/playlist.m3u8
-```
-
-## License
-
-Open source. Feel free to contribute!
-
